@@ -4,8 +4,13 @@ function login() {
 	var	username = document.getElementById('username');
 	var password = document.getElementById('password');
 	var userRef = firebaseRef.child("Users").child(username.value);
-	userRef.child("password").on('value', function (datasnapshot) {
-		if (datasnapshot.val() == password.value) {
+	userRef.on('value', function (datasnapshot) {
+		var data = datasnapshot.val();
+		if (data["userRole"] != "admin" && data["userRole"] != "manager") {
+			window.alert("Bạn không có quyền đăng nhập");
+		} else if (data["password"] == password.value) {
+			$.cookie('username', null);
+			$.cookie('username', username.value, { expires: 14 });
 			cancel();
 		} else {
 			window.alert("Sai tên đăng nhập hoặc mật khẩu");

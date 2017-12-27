@@ -1,6 +1,6 @@
 type = ['','info','success','warning','danger'];
 
-
+var firebaseRef = firebase.database().ref();
 demo = {
     initPickColor: function(){
         $('.pick-class-label').click(function(){
@@ -17,117 +17,100 @@ demo = {
     },
 
     initChartist: function(){
-
-        var dataSales = {
-          labels: ['9:00AM', '12:00AM', '3:00PM', '6:00PM', '9:00PM', '12:00PM', '3:00AM', '6:00AM'],
-          series: [
-             [287, 385, 490, 562, 594, 626, 698, 895, 952],
-            [67, 152, 193, 240, 387, 435, 535, 642, 744],
-            [23, 113, 67, 108, 190, 239, 307, 410, 410]
-          ]
-        };
-
-        var optionsSales = {
-          lineSmooth: false,
-          low: 0,
-          high: 1000,
-          showArea: true,
-          height: "245px",
-          axisX: {
-            showGrid: false,
-          },
-          lineSmooth: Chartist.Interpolation.simple({
-            divisor: 3
-          }),
-          showLine: true,
-          showPoint: false,
-        };
-
-        var responsiveSales = [
-          ['screen and (max-width: 640px)', {
-            axisX: {
-              labelInterpolationFnc: function (value) {
-                return value[0];
-              }
+      var managerName = $.cookie('username');
+      var numberEmp = 0;
+      var userRefer = firebaseRef.child("Users");
+      userRefer.once('value', function(snapshot) {
+        snapshot.forEach(function(childSnapshot) {
+            var childData = childSnapshot.val();
+            if (childData["managerName"] == managerName && childData["userRole"] == "employee") {
+              numberEmp = numberEmp + 1;
             }
-          }]
-        ];
-
-        Chartist.Line('#chartHours', dataSales, optionsSales, responsiveSales);
-
-
-        var data = {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          series: [
-            [542, 543, 520, 680, 653, 753, 326, 434, 568, 610, 756, 895],
-            [230, 293, 380, 480, 503, 553, 600, 664, 698, 710, 736, 795]
-          ]
-        };
-
-        var options = {
-            seriesBarDistance: 10,
-            axisX: {
-                showGrid: false
-            },
-            height: "245px"
-        };
-
-        var responsiveOptions = [
-          ['screen and (max-width: 640px)', {
-            seriesBarDistance: 5,
-            axisX: {
-              labelInterpolationFnc: function (value) {
-                return value[0];
-              }
-            }
-          }]
-        ];
-
-        Chartist.Line('#chartActivity', data, options, responsiveOptions);
-
-        var dataPreferences = {
-            series: [
-                [25, 30, 20, 25]
-            ]
-        };
-
-        var optionsPreferences = {
-            donut: true,
-            donutWidth: 40,
-            startAngle: 0,
-            total: 100,
-            showLabel: false,
-            axisX: {
-                showGrid: false
-            }
-        };
-
-        Chartist.Pie('#chartPreferences', dataPreferences, optionsPreferences);
-
-        Chartist.Pie('#chartPreferences', {
-          labels: ['62%','32%','6%'],
-          series: [62, 32, 6]
         });
-    },
+        $("#employee").after(numberEmp);
+      });
+      var numberList = [];
+      var numberMonth = 0;
+      var numberDay = 0;
+      var today = new Date();
+      var curDay = today.getDate();
+      var curMonth = today.getMonth()+1;
 
-    initGoogleMaps: function(){
-        var myLatlng = new google.maps.LatLng(40.748817, -73.985428);
-        var mapOptions = {
-          zoom: 13,
-          center: myLatlng,
-          scrollwheel: false, //we disable de scroll over the map, it is a really annoing when you scroll through page
-          styles: [{"featureType":"water","stylers":[{"saturation":43},{"lightness":-11},{"hue":"#0088ff"}]},{"featureType":"road","elementType":"geometry.fill","stylers":[{"hue":"#ff0000"},{"saturation":-100},{"lightness":99}]},{"featureType":"road","elementType":"geometry.stroke","stylers":[{"color":"#808080"},{"lightness":54}]},{"featureType":"landscape.man_made","elementType":"geometry.fill","stylers":[{"color":"#ece2d9"}]},{"featureType":"poi.park","elementType":"geometry.fill","stylers":[{"color":"#ccdca1"}]},{"featureType":"road","elementType":"labels.text.fill","stylers":[{"color":"#767676"}]},{"featureType":"road","elementType":"labels.text.stroke","stylers":[{"color":"#ffffff"}]},{"featureType":"poi","stylers":[{"visibility":"off"}]},{"featureType":"landscape.natural","elementType":"geometry.fill","stylers":[{"visibility":"on"},{"color":"#b8cb93"}]},{"featureType":"poi.park","stylers":[{"visibility":"on"}]},{"featureType":"poi.sports_complex","stylers":[{"visibility":"on"}]},{"featureType":"poi.medical","stylers":[{"visibility":"on"}]},{"featureType":"poi.business","stylers":[{"visibility":"simplified"}]}]
 
-        }
-        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-        var marker = new google.maps.Marker({
-            position: myLatlng,
-            title:"Hello World!"
-        });
+      		var userRef = firebaseRef.child("Reports").child(managerName);
+      		userRef.once('value', function(snapshot) {
+          var curEmp = [0,0,0,0,0,0,0,0,0,0,0,0];
+      	  snapshot.forEach(function(childSnapshot) {
+            var childData = childSnapshot.val();
+            var createDate = childData["createDate"];
+            var dd = createDate[8].toString() + createDate[9].toString();
+            var mm = createDate[5].toString() + createDate[6].toString();
+            if (dd == curDay && mm == curMonth) {
+                numberMonth++;
+                numberDay++;
+            } else if (mm == curMonth) {
+                numberMonth++;
+            }
+            if (mm == "01") {
+              curEmp[0] = curEmp[0] + 1;
+            } else if (mm == "02") {
+              curEmp[1] = curEmp[1] + 1;
+            } else if (mm == "03") {
+              curEmp[2] = curEmp[2] + 1;
+            } else if (mm == "04") {
+              curEmp[3] = curEmp[3] + 1;
+            } else if (mm == "05") {
+              curEmp[4] = curEmp[4] + 1;
+            } else if (mm == "06") {
+              curEmp[5] = curEmp[5] + 1;
+            } else if (mm == "07") {
+              curEmp[6] = curEmp[6] + 1;
+            } else if (mm == "08") {
+              curEmp[7] = curEmp[7] + 1;
+            } else if (mm == "09") {
+              curEmp[8] = curEmp[8] + 1;
+            } else if (mm == "10") {
+              curEmp[9] = curEmp[9] + 1;
+            } else if (mm == "11") {
+              curEmp[10] = curEmp[10] + 1;
+            } else if (mm == "12") {
+              curEmp[11] = curEmp[11] + 1;
+            }
+      	  });
+          numberList.push(curEmp);
+          var data = {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            series: numberList
+          };
 
-        // To add the marker to the map, call setMap();
-        marker.setMap(map);
+          var options = {
+              seriesBarDistance: 10,
+              axisX: {
+                  showGrid: false
+              },
+              height: "245px"
+          };
+
+          var responsiveOptions = [
+            ['screen and (max-width: 640px)', {
+              seriesBarDistance: 5,
+              axisX: {
+                labelInterpolationFnc: function (value) {
+                  return value[0];
+                }
+              }
+            }]
+          ];
+
+          Chartist.Line('#chartActivity', data, options, responsiveOptions);
+
+          $("#monthlyReport").after(numberMonth);
+          $("#dailyReport").after(numberDay);
+      	});
+
+
+
     },
 
 	showNotification: function(from, align){
@@ -145,171 +128,6 @@ demo = {
                 align: align
             }
         });
-	},
-    initDocumentationCharts: function(){
-    //     	init single simple line chart
-        var dataPerformance = {
-          labels: ['6pm','9pm','11pm', '2am', '4am', '8am', '2pm', '5pm', '8pm', '11pm', '4am'],
-          series: [
-            [1, 6, 8, 7, 4, 7, 8, 12, 16, 17, 14, 13]
-          ]
-        };
-
-        var optionsPerformance = {
-          showPoint: false,
-          lineSmooth: true,
-          height: "200px",
-          axisX: {
-            showGrid: false,
-            showLabel: true
-          },
-          axisY: {
-            offset: 40,
-          },
-          low: 0,
-          high: 16,
-          height: "250px"
-        };
-
-        Chartist.Line('#chartPerformance', dataPerformance, optionsPerformance);
-
-    //     init single line with points chart
-        var dataStock = {
-          labels: ['\'07','\'08','\'09', '\'10', '\'11', '\'12', '\'13', '\'14', '\'15'],
-          series: [
-            [22.20, 34.90, 42.28, 51.93, 62.21, 80.23, 62.21, 82.12, 102.50, 107.23]
-          ]
-        };
-
-        var optionsStock = {
-          lineSmooth: false,
-          height: "200px",
-          axisY: {
-            offset: 40,
-            labelInterpolationFnc: function(value) {
-                return '$' + value;
-              }
-
-          },
-          low: 10,
-          height: "250px",
-          high: 110,
-            classNames: {
-              point: 'ct-point ct-green',
-              line: 'ct-line ct-green'
-          }
-        };
-
-        Chartist.Line('#chartStock', dataStock, optionsStock);
-
-    //      init multiple lines chart
-        var dataSales = {
-          labels: ['9:00AM', '12:00AM', '3:00PM', '6:00PM', '9:00PM', '12:00PM', '3:00AM', '6:00AM'],
-          series: [
-             [287, 385, 490, 562, 594, 626, 698, 895, 952],
-            [67, 152, 193, 240, 387, 435, 535, 642, 744],
-            [23, 113, 67, 108, 190, 239, 307, 410, 410]
-          ]
-        };
-
-        var optionsSales = {
-          lineSmooth: false,
-          low: 0,
-          high: 1000,
-          showArea: true,
-          height: "245px",
-          axisX: {
-            showGrid: false,
-          },
-          lineSmooth: Chartist.Interpolation.simple({
-            divisor: 3
-          }),
-          showLine: true,
-          showPoint: false,
-        };
-
-        var responsiveSales = [
-          ['screen and (max-width: 640px)', {
-            axisX: {
-              labelInterpolationFnc: function (value) {
-                return value[0];
-              }
-            }
-          }]
-        ];
-
-        Chartist.Line('#chartHours', dataSales, optionsSales, responsiveSales);
-
-    //      pie chart
-        Chartist.Pie('#chartPreferences', {
-          labels: ['62%','32%','6%'],
-          series: [62, 32, 6]
-        });
-
-    //      bar chart
-        var dataViews = {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          series: [
-            [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895]
-          ]
-        };
-
-        var optionsViews = {
-          seriesBarDistance: 10,
-          classNames: {
-            bar: 'ct-bar'
-          },
-          axisX: {
-            showGrid: false,
-
-          },
-          height: "250px"
-
-        };
-
-        var responsiveOptionsViews = [
-          ['screen and (max-width: 640px)', {
-            seriesBarDistance: 5,
-            axisX: {
-              labelInterpolationFnc: function (value) {
-                return value[0];
-              }
-            }
-          }]
-        ];
-
-        Chartist.Bar('#chartViews', dataViews, optionsViews, responsiveOptionsViews);
-
-    //     multiple bars chart
-        var data = {
-          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-          series: [
-            [542, 543, 520, 680, 653, 753, 326, 434, 568, 610, 756, 895],
-            [230, 293, 380, 480, 503, 553, 600, 664, 698, 710, 736, 795]
-          ]
-        };
-
-        var options = {
-            seriesBarDistance: 10,
-            axisX: {
-                showGrid: false
-            },
-            height: "245px"
-        };
-
-        var responsiveOptions = [
-          ['screen and (max-width: 640px)', {
-            seriesBarDistance: 5,
-            axisX: {
-              labelInterpolationFnc: function (value) {
-                return value[0];
-              }
-            }
-          }]
-        ];
-
-        Chartist.Line('#chartActivity', data, options, responsiveOptions);
-
-    }
+	}
 
 }
