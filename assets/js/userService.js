@@ -9,7 +9,6 @@ function createUserItem(name,username, userRole, managerName) {
   + '<div class="col-xs-7">'
   + '<div class="numbers">'
   + '<p>'  + name + '</p>'
-  + '<button type="button" class="btn btn-info" data-toggle="modal" data-target="#'+ username +'">Xem</button>'
   + '</div></div></div>'
   + '<div class="footer"><hr /><div class="stats">'
   + '<i class="ti-timer"></i>'
