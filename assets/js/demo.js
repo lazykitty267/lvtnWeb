@@ -87,7 +87,7 @@ demo = {
           var options = {
               seriesBarDistance: 10,
               axisX: {
-                  showGrid: false
+                  showGrid: true
               },
               height: "245px"
           };

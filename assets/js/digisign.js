@@ -9,9 +9,7 @@ $("#file-dialog").change(function() {
 	//digiweb(this.files,("#sign").file,("#pub").file);
 	digi(this.files,Signature,publicKey);
 });
-function digi(files, Signature, publicKey){
-	
-	   
+function digi(files, Signature, publicKey){  
 		for (var i=0; i<files.length; i++) {
         var reader = new FileReader();
         reader.onload = function(event) {
@@ -27,9 +25,9 @@ function digi(files, Signature, publicKey){
 			console.log(k);
 			//var c = new RSAKey();
 			//var pubKey = c.readCertPubKeyHex(k, 6)
-			//var keyObj1 = KEYUTIL.getKey(k);			
+			//var keyObj1 = KEYUTIL.getKey(k);
 
-			var keyObj = KEYUTIL.getKey({n: publicKey, e: "0xFF"});			
+			var keyObj = KEYUTIL.getKey({n: publicKey, e: "0xFF"});
 			var is = keyObj.verifyWithMessageHash(md5, Signature);
 			//var result = c.subjectPublicKeyRSA.verifyHex(md5, Signature);
 			console.log(is);
@@ -69,7 +67,7 @@ function digiweb(files, Signature, publicKey){
 			var binary = event.target.result;
 			var md5 = CryptoJS.MD5(binary).toString();
 			console.log(md5);
-			
+
 			var sig = new rs.KJUR.crypto.Signature({alg: "SHA1withRSA"});
 			sig.init(pubkey);
 			sig.updateString("aaa");

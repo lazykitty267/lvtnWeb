@@ -58,7 +58,9 @@ $(document).ready(function() { getPdf();});
 function createModalItem(id ,userName, reportName, date, url, comment, imageList, hashTag) {
   var attachString = "";
   for (var i = 0; i < imageList.length; i++) {
-    attachString = attachString + '<img src="' + imageList[i] + '" class="img-rounded" width="50px" height="50px"/>';
+    attachString = attachString + '<img src="' + imageList[i] + '" class="img-rounded" '
+    + 'onclick="window.open(\'' + imageList[i] + '\')" '
+    +'  width="50px" height="50px"/>';
   }
   if (hashTag == null) {
     hashTag = "";
