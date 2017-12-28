@@ -29,6 +29,7 @@ function createUser() {
 	var retyped_password = document.getElementById('retyped_password').value;
 	var name = document.getElementById('name').value;
 	var role = document.getElementById('role').value;
+	var managerName = $.cookie('username');
 	// Thiếu managerId. Cần lưu thông tin admin để điền vào managerId
 	if (username == "" ||
 			password == "" ||
@@ -41,7 +42,8 @@ function createUser() {
 			name: name,
 			password: password,
 			userRole: role,
-			username: username
+			username: username,
+			managerName: managerName
 		});
 		window.alert("Tạo user thành công");
 		cancel();

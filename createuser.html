@@ -125,15 +125,17 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label>Chức vụ</label>
-                                                <input type="text" id="role" class="form-control border-input" placeholder="Chức vụ">
+																								<select class="form-control border-input" id="role">
+																						    <option>employee</option>
+																						  </select>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="text-center col-md-7">
-                                        <button type="submit" onclick="createUser()" class="btn btn-info btn-fill btn-wd">Tạo User</button>
+                                        <button type="button" onclick="createUser()" class="btn btn-info btn-fill btn-wd">Tạo User</button>
                                     </div>
                                     <div class="text-center col-md-1">
-                                        <button type="submit" onclick="cancel()" class="btn btn-info btn-fill btn-wd">Hủy</button>
+                                        <button type="button" onclick="window.location='dashboard.html'" class="btn btn-info btn-fill btn-wd">Hủy</button>
                                     </div>
                                     <div class="clearfix"></div>
                                 </form>
@@ -147,7 +149,7 @@
         </div>
 
 
-        
+
 
     </div>
 </div>
