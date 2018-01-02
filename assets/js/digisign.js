@@ -14,6 +14,18 @@ $("#file-dialog").change(function() {
 	//readPub(document.getElementById("pub").files[0]);
 	//console.log(Sign);
 	//console.log(pub);
+	
+	//fetch('https://firebasestorage.googleapis.com/v0/b/lvtn-32984.appspot.com/o/pdf%2F-L1VV8nuQF-j9U6eVQdz_20171229_112110.pdf?alt=media&token=58738735-09fd-4376-8f5a-11ffe43877e0')
+  //.then(res => res.blob()) // Gets the response and returns it as a blob
+  //.then(blob => {
+    // Here's where you get access to the blob
+    // And you can use it for whatever you want
+    // Like calling ref().put(blob)
+
+    // Here, I use it to make an image appear on the page
+	//console.log("URL");
+	//process(blob,document.getElementById("sign").files[0],document.getElementById("pub").files[0]);
+//});
 	process(document.getElementById("file-dialog").files[0],document.getElementById("sign").files[0],document.getElementById("pub").files[0]);
 	//digi(this.files,Sign,pub);
 });
@@ -206,7 +218,7 @@ function process(file,sign,pub){
 							binaryString = String.fromCharCode.apply(null, array);
 						var hexPub = toHexString(array);
 						var pubkeyPem = stringFromArray(array);console.log(pubkeyPem);
-						//console.log(md5);						
+						console.log(md5);						
 						//console.log(hexSign);
 						//console.log(hexPub);
 						//var keyObj = KEYUTIL.getKey({n: hexPub, e: "10001"});						
