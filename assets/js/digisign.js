@@ -14,7 +14,7 @@ $("#file-dialog").change(function() {
 	//readPub(document.getElementById("pub").files[0]);
 	//console.log(Sign);
 	//console.log(pub);
-	
+
 	//fetch('https://firebasestorage.googleapis.com/v0/b/lvtn-32984.appspot.com/o/pdf%2F-L1VV8nuQF-j9U6eVQdz_20171229_112110.pdf?alt=media&token=58738735-09fd-4376-8f5a-11ffe43877e0')
   //.then(res => res.blob()) // Gets the response and returns it as a blob
   //.then(blob => {
@@ -48,20 +48,20 @@ function digi(files, Signature, publicKey){
 			console.log(k);
 			//var c = new RSAKey();
 			//var pubKey = c.readCertPubKeyHex(k, 6)
-			//var keyObj1 = KEYUTIL.getKey(k);			
+			//var keyObj1 = KEYUTIL.getKey(k);
 			//var h = pemtohex(k);
-			var keyObj = KEYUTIL.getKey({n: publicKey, e: "010010"});						
-			//var keyObj1 = KEYUTIL.getKey(k);		
+			var keyObj = KEYUTIL.getKey({n: publicKey, e: "010010"});
+			//var keyObj1 = KEYUTIL.getKey(k);
 			console.log(c.getPublicKeyHex());
 			console.log(keyObj);
 			//var result = c.subjectPublicKeyRSA.verifyHex(md5, Signature);
-			//var keyObj1 = KEYUTIL.getKey(k);		
-			//var is = keyObj1.verifyWithMessageHash(md5, Signature);				
+			//var keyObj1 = KEYUTIL.getKey(k);
+			//var is = keyObj1.verifyWithMessageHash(md5, Signature);
 
 			console.log(is);
 			console.log(KEYUTIL.getPEM(keyObj));
 			console.log(keyObj);
-			
+
 			//var is = RSAKey.verifyWithMessageHash(md5, Signature)
 
 			var sig = new KJUR.crypto.Signature({"alg": "SHA1withRSA"});
@@ -95,7 +95,7 @@ function digiweb(files, Signature, publicKey){
 			var binary = event.target.result;
 			var md5 = CryptoJS.MD5(binary).toString();
 			console.log(md5);
-			
+
 			var sig = new rs.KJUR.crypto.Signature({alg: "SHA1withRSA"});
 			sig.init(pubkey);
 			sig.updateString("aaa");
@@ -135,7 +135,7 @@ function readChunked(file, chunkCallback, endCallback) {
     offset += reader.result.length;
     // callback for handling read chunk
     // TODO: handle errors
-    chunkCallback(reader.result, offset, fileSize); 
+    chunkCallback(reader.result, offset, fileSize);
     if (offset >= fileSize) {
       endCallback(null);
       return;
@@ -218,10 +218,10 @@ function process(file,sign,pub){
 							binaryString = String.fromCharCode.apply(null, array);
 						var hexPub = toHexString(array);
 						var pubkeyPem = stringFromArray(array);console.log(pubkeyPem);
-						console.log(md5);						
+						console.log(md5);
 						//console.log(hexSign);
 						//console.log(hexPub);
-						//var keyObj = KEYUTIL.getKey({n: hexPub, e: "10001"});						
+						//var keyObj = KEYUTIL.getKey({n: hexPub, e: "10001"});
 						//var k = KJUR.asn1.ASN1Util.getPEMStringFromHex(hexPub, 'PUBLIC KEY');
 						//console.log(k);
 						var keyObj = KEYUTIL.getKey(pubkeyPem);
@@ -234,19 +234,23 @@ function process(file,sign,pub){
 						sig.updateString(md5);
 
 						// verify signature
-						var isValid = sig.verify(hexSign);		
+						var isValid = sig.verify(hexSign);
 
 						console.log(isValid);
-						
+						if (isValid) {
+							window.alert("File đã xác thực");
+						} else {
+							window.alert("File đã bị thay đổi bởi người khác");
+						}
 					}
 					pubreader.readAsArrayBuffer(pub);
-					
+
 				}
 				signreader.readAsArrayBuffer(sign)
-			
-			
-			
-			
+
+
+
+
 			},
 			err => console.error(err)
 		  );
@@ -255,16 +259,56 @@ function stringFromArray(data)
   {
     var count = data.length;
     var str = "";
-    
+
     for(var index = 0; index < count; index += 1)
       str += String.fromCharCode(data[index]);
-    
+
     return str;
   }
 function toHexString(byteArray) {
   return Array.from(byteArray, function(byte) {
     return ('0' + (byte & 0xFF).toString(16)).slice(-2);
   }).join('')
+}
+
+function check(file, sign, pub){
+	var requestfile = new XMLHttpRequest();
+	requestfile.open('GET', file, true);
+	requestfile.responseType = 'blob';
+	requestfile.onload = function() {
+		var filereader = new FileReader();
+	    filereader.readAsDataURL(requestfile.response);
+	    filereader.onload =  function(e){
+	        console.log('DataURL:', e.target.result);
+	    };
+			var requestsign = new XMLHttpRequest();
+			requestsign.open('GET', sign, true);
+			requestsign.responseType = 'blob';
+			requestsign.onload = function() {
+				var signreader = new FileReader();
+			    signreader.readAsDataURL(requestsign.response);
+			    signreader.onload =  function(e){
+			        console.log('DataURL:', e.target.result);
+			    };
+
+					var requestpub = new XMLHttpRequest();
+					requestpub.open('GET', pub, true);
+					requestpub.responseType = 'blob';
+					requestpub.onload = function() {
+						var pubreader = new FileReader();
+					    pubreader.readAsDataURL(requestpub.response);
+					    pubreader.onload =  function(e){
+					        console.log('DataURL:', e.target.result);
+					    };
+							process(requestfile.response, requestsign.response, requestpub.response);
+
+					};
+					requestpub.send();
+			};
+			requestsign.send();
+	};
+	requestfile.send();
+
 }
 
 var z1PubP8PEM = "" +

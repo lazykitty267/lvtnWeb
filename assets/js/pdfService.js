@@ -1,4 +1,4 @@
-function createPdfItem(id,userName, reportName, date, url, comment ,imageList, hashTag) {
+function createPdfItem(id,userName, reportName, date, url, comment ,imageList, hashTag, signUrl, publicKeyUrl) {
   $("#content").append('<div class="col-lg-3 col-sm-6">'
   + '<div class="card">'
   + '<div class="content">'
@@ -16,7 +16,7 @@ function createPdfItem(id,userName, reportName, date, url, comment ,imageList, h
   + date + '</div>'
   + '<div class="stats" style="float: right;">' + '<i class="ti-home"></i>' + userName + '</div>'
   + '</div></div></div></div>');
-  createModalItem(id,userName, reportName, date, url, comment, imageList, hashTag);
+  createModalItem(id,userName, reportName, date, url, comment, imageList, hashTag, signUrl, publicKeyUrl);
 }
 
 var firebaseRef = firebase.database().ref();
@@ -35,8 +35,11 @@ function getPdf() {
       var privateField = childData["privateField"];
       var hashTag = childData["hashTag"];
       var pdfRef = firebaseRef.child("Pdfs");
-    	pdfRef.child(id).child("url").on('value', function (datasnapshot) {
-        var url = datasnapshot.val();
+    	pdfRef.child(id).once('value', function (datasnapshot) {
+        var pdfData = datasnapshot.val();
+        var url = pdfData["url"];
+        var signUrl = pdfData["signUrl"];
+        var publicKeyUrl = pdfData["publicKeyUrl"];
         var imageList = [];
         if (url != null) {
           var attachRef = firebaseRef.child("Attachs").child(id);
@@ -45,7 +48,7 @@ function getPdf() {
                 var attachChildData = attachChildSnapshot.val();
                 imageList.push(attachChildData["url"]);
             });
-            createPdfItem(id,username, reportName, createDate, url, privateField ,imageList, hashTag);
+            createPdfItem(id,username, reportName, createDate, url, privateField ,imageList, hashTag, signUrl, publicKeyUrl);
           });
         }
     	});
@@ -55,7 +58,7 @@ function getPdf() {
 
 $(document).ready(function() { getPdf();});
 
-function createModalItem(id ,userName, reportName, date, url, comment, imageList, hashTag) {
+function createModalItem(id ,userName, reportName, date, url, comment, imageList, hashTag, signUrl, publicKeyUrl) {
   var attachString = "";
   for (var i = 0; i < imageList.length; i++) {
     attachString = attachString + '<img src="' + imageList[i] + '" class="img-rounded" width="50px" height="50px"/>';
@@ -77,6 +80,7 @@ function createModalItem(id ,userName, reportName, date, url, comment, imageList
   + '<label>Comment:</label>'
   + '<textarea class="form-control" rows="5" readonly="true" resize="none">' + comment +'</textarea> </br>'
   + '</div></div></div>' + '<div class="modal-footer">'
+  + '<button type="submit" class="btn btn-default" onclick="check(\''+ url +'\',\'' + signUrl + '\',\'' + publicKeyUrl + '\')">Xác thực báo cáo</button>'
   + '<button type="submit" class="btn btn-default" onclick="window.open(\''+ url +'\')">Xem báo cáo</button>'
   + '<button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button></div></div> </div> </div>');
 }
